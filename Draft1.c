@@ -1,14 +1,3 @@
-/*******************************************************************************************
-*
-*   Arkanoid Hybrid - raylib + 42-style structure
-*   - Title screen: "Arkanoid" as the main title (no "ARKANOID" below)
-*   - Shows "version 1" at the bottom right
-*   - Normal windowed mode (not fullscreen)
-*   - Powerups (expand paddle, extra life, multi-ball)
-*   - Win and Game Over screens
-*   - Wait for player to launch the ball before decrementing lives
-*
-********************************************************************************************/
 
 #include "raylib.h"
 #include <stdio.h>
@@ -16,9 +5,6 @@
 #include <math.h>
 #include <time.h>
 
-//----------------------------------------------------------------------------------
-// Defines
-//----------------------------------------------------------------------------------
 #define PLAYER_MAX_LIFE         3
 #define LINES_OF_BRICKS         5
 #define BRICKS_PER_LINE         10
@@ -39,9 +25,6 @@ typedef enum e_powerup_type {
     POWERUP_MULTI_BALL
 } t_powerup_type;
 
-//----------------------------------------------------------------------------------
-// Types and Structures
-//----------------------------------------------------------------------------------
 typedef struct	s_player
 {
     Vector2 pos;
@@ -74,9 +57,6 @@ typedef struct  s_powerup
     bool active;
 }               t_powerup;
 
-//------------------------------------------------------------------------------------
-// Global Variables
-//------------------------------------------------------------------------------------
 static const int screenWidth = 960;
 static const int screenHeight = 720;
 
@@ -91,9 +71,6 @@ static int score = 0;
 static t_powerup powerups[POWERUPS_MAX] = { 0 };
 static bool waiting_for_launch = true;
 
-//------------------------------------------------------------------------------------
-// Function Prototypes
-//------------------------------------------------------------------------------------
 void	init_game(void);
 void	update_game(void);
 void	draw_game(void);
@@ -103,9 +80,6 @@ void    spawn_powerup(Vector2 pos);
 void    apply_powerup(t_powerup_type type);
 void    reset_balls(Vector2 pos);
 
-//------------------------------------------------------------------------------------
-// Main Entry Point
-//------------------------------------------------------------------------------------
 int main(void)
 {
     InitWindow(screenWidth, screenHeight, "Arkanoid Hybrid - raylib + 42 style");
@@ -117,7 +91,7 @@ int main(void)
     while (!WindowShouldClose())
     {
         if (IsWindowResized()) {
-            // Optional: keep brick sizes and paddle scaling fixed, or readjust as desired
+            
         }
         update_draw_frame();
     }
@@ -127,15 +101,12 @@ int main(void)
     return 0;
 }
 
-//------------------------------------------------------------------------------------
-// Module Functions
-//------------------------------------------------------------------------------------
 void	init_game(void)
 {
-    // Set brick size and layout
+   
     brickSize = (Vector2){ screenWidth/(float)BRICKS_PER_LINE, 38 };
 
-    // Initialize player (paddle)
+   
     player.size = (Vector2){ 140, 22 };
     player.pos = (Vector2){ screenWidth/2.0f - player.size.x/2, screenHeight - 50 };
     player.life = PLAYER_MAX_LIFE;
@@ -143,7 +114,7 @@ void	init_game(void)
     player.expanded = false;
     player.expand_timer = 0.0f;
 
-    // Initialize one ball
+    
     for (int i = 0; i < BALLS_MAX; i++) balls[i].active = false;
     ballsCount = 1;
     balls[0].radius = 12;
@@ -151,7 +122,7 @@ void	init_game(void)
     balls[0].spd = (Vector2){ 0, 0 };
     balls[0].active = false;
 
-    // Initialize bricks
+    
     for (int y = 0; y < LINES_OF_BRICKS; y++)
     {
         for (int x = 0; x < BRICKS_PER_LINE; x++)
@@ -166,7 +137,7 @@ void	init_game(void)
         }
     }
 
-    // Powerups
+    
     for (int i = 0; i < POWERUPS_MAX; i++) powerups[i].active = false;
 
     score = 0;
@@ -249,13 +220,13 @@ void	update_game(void)
 
         if (!pause)
         {
-            // Player movement
+            
             if (IsKeyDown(KEY_LEFT)) player.pos.x -= player.speed;
             if (IsKeyDown(KEY_RIGHT)) player.pos.x += player.speed;
             if (player.pos.x < 0) player.pos.x = 0;
             if (player.pos.x + player.size.x > screenWidth) player.pos.x = screenWidth - player.size.x;
 
-            // Shrink paddle if powerup expires
+            
             if (player.expanded) {
                 player.expand_timer -= GetFrameTime();
                 if (player.expand_timer <= 0.0f) {
@@ -264,7 +235,7 @@ void	update_game(void)
                 }
             }
 
-            // Ball launching (wait for user to press SPACE)
+            
             if (!balls[0].active)
             {
                 balls[0].pos.x = player.pos.x + player.size.x/2;
@@ -277,7 +248,7 @@ void	update_game(void)
                 }
             }
 
-            // Ball movement and logic for all balls
+           
             for (int b = 0; b < BALLS_MAX; b++)
             {
                 if (!balls[b].active) continue;
@@ -285,13 +256,13 @@ void	update_game(void)
                 balls[b].pos.x += balls[b].spd.x;
                 balls[b].pos.y += balls[b].spd.y;
 
-                // Ball collision with walls
+               
                 if ((balls[b].pos.x - balls[b].radius) <= 0 || (balls[b].pos.x + balls[b].radius) >= screenWidth)
                     balls[b].spd.x *= -1;
                 if ((balls[b].pos.y - balls[b].radius) <= 0)
                     balls[b].spd.y *= -1;
 
-                // Ball collision with paddle
+               
                 Rectangle paddleRect = { player.pos.x, player.pos.y, player.size.x, player.size.y };
                 if (CheckCollisionCircleRec(balls[b].pos, balls[b].radius, paddleRect))
                 {
@@ -300,14 +271,14 @@ void	update_game(void)
                     balls[b].spd.x = 4 * hitPos;
                 }
 
-                // Ball out of bounds (missed)
+                
                 if ((balls[b].pos.y - balls[b].radius) > screenHeight)
                 {
                     balls[b].active = false;
                     ballsCount--;
                 }
 
-                // Ball collision with bricks
+                
                 for (int y = 0; y < LINES_OF_BRICKS; y++)
                 {
                     for (int x = 0; x < BRICKS_PER_LINE; x++)
@@ -324,7 +295,7 @@ void	update_game(void)
                 }
             }
 
-            // If all balls inactive, lose a life and reset (but only after launch!)
+            
             bool anyBallActive = false;
             for (int b = 0; b < BALLS_MAX; b++)
                 if (balls[b].active) anyBallActive = true;
@@ -340,13 +311,13 @@ void	update_game(void)
                 }
             }
 
-            // Powerups falling and collection
+           
             for (int i = 0; i < POWERUPS_MAX; i++)
             {
                 if (!powerups[i].active) continue;
                 powerups[i].pos.y += powerups[i].spd.y;
 
-                // Paddle collects powerup
+               
                 Rectangle paddleRect = { player.pos.x, player.pos.y, player.size.x, player.size.y };
                 Rectangle puRect = {powerups[i].pos.x-14, powerups[i].pos.y-14, 28, 28};
                 if (CheckCollisionRecs(paddleRect, puRect))
@@ -357,7 +328,7 @@ void	update_game(void)
                 if (powerups[i].pos.y > screenHeight) powerups[i].active = false;
             }
 
-            // Win condition (all bricks destroyed)
+            
             bool bricksLeft = false;
             for (int y = 0; y < LINES_OF_BRICKS; y++)
                 for (int x = 0; x < BRICKS_PER_LINE; x++)
@@ -418,7 +389,7 @@ void	draw_title_screen(void)
 {
     draw_background();
 
-    // "Arkanoid" as main title (no "ARKANOID" below)
+   
     int arkanoidFontSize = 110;
     int arkanoidWidth = MeasureText("Arkanoid", arkanoidFontSize);
     DrawText("Arkanoid",
@@ -427,12 +398,12 @@ void	draw_title_screen(void)
         arkanoidFontSize,
         (Color){ 255, 180, 60, 255 });
 
-    // Version info at bottom right
+   
     const char *versionStr = "version 1";
     int versionW = MeasureText(versionStr, 28);
     DrawText(versionStr, screenWidth - versionW - 24, screenHeight - 44, 28, LIGHTGRAY);
 
-    // Instructions
+    
     const char *instructions[] = {
         "Press SPACE or ENTER to start",
         "Move paddle: LEFT / RIGHT arrow keys",
@@ -502,7 +473,7 @@ void	draw_game(void)
 
 void	unload_game(void)
 {
-    // Not used, but available for future resource cleanup
+   
 }
 
 void	update_draw_frame(void)
@@ -511,4 +482,5 @@ void	update_draw_frame(void)
     BeginDrawing();
     draw_game();
     EndDrawing();
+
 }
