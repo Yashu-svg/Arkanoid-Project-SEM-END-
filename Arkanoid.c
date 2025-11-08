@@ -1,7 +1,7 @@
 /*******************************************************************************************
-*
-*   Arkanoid Hybrid - raylib + 42-style structure (with detailed line-by-line comments)
-*
+
+                                    Arkanoid
+
 ********************************************************************************************/
 
 #include "raylib.h"                  // Loads raylib library for graphics, windows, and input
@@ -526,4 +526,5 @@ void update_draw_frame(void)
     BeginDrawing();  // Begin rendering
     draw_game();     // Draw everything for one frame
     EndDrawing();    // End rendering
+
 }
