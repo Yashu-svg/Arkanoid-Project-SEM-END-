@@ -1,6 +1,6 @@
 /*******************************************************************************************
 
-                                    Arkanoid
+                                          Arkanoid 
 
 ********************************************************************************************/
 
@@ -88,13 +88,12 @@ static int score = 0;                       // Player score (starts at 0)
 static t_powerup powerups[POWERUPS_MAX] = { 0 }; // Array of possible falling powerups
 static bool waiting_for_launch = true;      // Between life loss and ball ready for relaunch
 
-//------------------------------------------------------------------------------------
+//------------------------ ------------------------------------------------------------
 // Function Prototypes - tells compiler what functions exist below
 //------------------------------------------------------------------------------------
 void   init_game(void);                    // Sets up all game variables for new game/start
 void   update_game(void);                  // Steps game logic according to game state
 void   draw_game(void);                    // Draws all objects depending on game state
-void   unload_game(void);                  // (Unused for now) To clean up any resources
 void   update_draw_frame(void);            // Calls update/draw per frame
 void   spawn_powerup(Vector2 pos);         // Creates a powerup object at brick coords
 void   apply_powerup(t_powerup_type type); // Applies effect of collected powerup
@@ -106,20 +105,18 @@ void   reset_balls(Vector2 pos);           // Resets all balls after loss
 int main(void)
 {
     InitWindow(screenWidth, screenHeight, "Arkanoid "); // Creates window
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT); // Resizable window & VSync to cap FPS
+    
     SetTargetFPS(60);                                        // Runs at 60 frames/second
     srand((unsigned int)time(0));                            // Seeds RNG for randomness
     init_game();                                             // Sets up all variables and objects
 
+    
     while (!WindowShouldClose())                             // Main game loop; exits when window closes
     {
-        if (IsWindowResized()) {
-            // Optional: keep brick sizes and paddle scaling fixed, or readjust as desired
-        }
         update_draw_frame();                                 // Updates and draws this frame
     }
 
-    unload_game();                                           // Call cleanup (if needed)
+    // Call cleanup (if needed)
     CloseWindow();                                           // Close window and terminate
     return 0;                                                // Exit with code 0 (success)
 }
@@ -136,7 +133,7 @@ void init_game(void)
     player.size = (Vector2){ 140, 22 };                          // Paddle width/height
     player.pos = (Vector2){ screenWidth/2.0f - player.size.x/2, screenHeight - 50 }; // Center & offset paddle near bottom
     player.life = PLAYER_MAX_LIFE;                               // Set lives to max value
-    player.speed = 8.0f;                                         // Set left/right paddle movement speed
+    player.speed = 15.0f;                                         // Set left/right paddle movement speed
     player.expanded = false;                                     // Not expanded at start
     player.expand_timer = 0.0f;                                  // No expansion timer at start
 
@@ -270,8 +267,8 @@ void update_game(void)
                 {
                     balls[0].active = true;                        // Set moving
                     balls[0].spd = (Vector2){
-                        7 * ((GetRandomValue(0, 1) == 0) ? -1 : 1), // Speed x: left/right random
-                        -7 };                                       // Speed y: always up at start
+                        6 * ((GetRandomValue(0, 1) == 0) ? -1 : 1), // Speed x: left/right ranm
+                        -6 };                                       // Speed y: always up at start
                     waiting_for_launch = false;
                 }
             }
@@ -434,9 +431,10 @@ void draw_title_screen(void)
         120,                                               // Y position for title
         arkanoidFontSize,
         (Color){ 255, 180, 60, 255 });
+         
 
-    // Version info at bottom right
-    const char *versionStr = "version 1";
+    // Creater info at bottom right
+    const char *versionStr = "Made by --> Yash Shah";
     int versionW = MeasureText(versionStr, 28);
     DrawText(versionStr, screenWidth - versionW - 24, screenHeight - 44, 28, LIGHTGRAY);
 
@@ -480,7 +478,7 @@ void draw_game(void)
         // Draw balls
         for (int b = 0; b < BALLS_MAX; b++)
             if (balls[b].active)
-                DrawCircleV(balls[b].pos, balls[b].radius, MAROON);
+                DrawCircleV(balls[b].pos, balls[b].radius, RED);
 
         // Draw bricks
         for (int y = 0; y < LINES_OF_BRICKS; y++)
@@ -508,17 +506,13 @@ void draw_game(void)
     }
     else if (gameState == GAME_WIN)
     {
-        DrawText("VICTORY!", screenWidth/2 - MeasureText("VICTORY!", 64)/2, screenHeight/2 - 96, 64, DARKGREEN);
+        DrawText("VICTORY!", screenWidth/2 - MeasureText("VICTORY!", 64)/2, screenHeight/2 - 96, 64, YELLOW);
         DrawText(TextFormat("FINAL SCORE: %i", score), screenWidth/2-MeasureText("FINAL SCORE: 0000", 34)/2, screenHeight/2, 34, MAROON);
         DrawText("YOU CLEARED ALL THE BRICKS!", screenWidth/2-MeasureText("YOU CLEARED ALL THE BRICKS!", 28)/2, screenHeight/2 + 48, 28, ORANGE);
         DrawText("PRESS [ENTER] TO RETURN TO TITLE", screenWidth/2-MeasureText("PRESS [ENTER] TO RETURN TO TITLE", 26)/2, screenHeight/2 + 96, 26, DARKGRAY);
     }
 }
 
-void unload_game(void)
-{
-    // Currently unused. Could clean up loaded assets or resources if needed.
-}
 
 void update_draw_frame(void)
 {
@@ -526,5 +520,4 @@ void update_draw_frame(void)
     BeginDrawing();  // Begin rendering
     draw_game();     // Draw everything for one frame
     EndDrawing();    // End rendering
-
 }
